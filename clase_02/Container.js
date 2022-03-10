@@ -5,10 +5,9 @@ class Container {
 	constructor(filename) {
 		this.filename = filename;
 		this.existFilename = null;
+		this.data = [] 
 	}
 
-	// lee el archivo y retorna la lista de productos 
-	// retornar objeto
 	async getAll(){
 		try {
 			const productList = await fs.readFile(this.filename, "utf-8");
@@ -19,51 +18,36 @@ class Container {
 		}
 	}
 	
-	// guarda el nuevo producto y asigna un id
-	// guardar el objeto
 	async save(product) {
-		// a traves del parametro prod ingresar prod
-		// leer ultimo id: extraer id de la lista de productos
-		// extraer el ultimo id
-		// si esta vacio poner asignar id:1
-		// si no esta vacio incrementar ultimo id en 1
-		// asignarlo al nuevo producto
-		// incorporar producto a la lista
+		const productList = await this.getAll();
+		this.data.push[productList]
 		if(this.existFilename){
-			const productList = await this.getAll();
-			if (productList.lenght === 0){
+			if (this.data.length === 0){
 				product.id = 1;
-				await fs.writeFile(this.filename,product);
+				await fs.writeFile(this.filename,JSON.stringify(product));
 				return product.id;
 			}
 
-			if(productList.lenght > 0 ){
-				const IDList =  productList.map(product => product.id);
+			if(this.data.length > 0 ){
+				const IDList =  this.data.map(a => a.id);
 				const lastID = IDList.pop();
-				product.id = lastID++;
-				await fs.writeFile(this.filename,product);
+				product.id = lastID + 1 ;
+				await fs.writeFile(this.filename,JSON.stringify(product));
 				return product.id;
 			}
 		} 
 
-		if(!this.existFilename){
-			await fs.writeFile(this.filename, "[]");
-			return "se ha creado el archivo. Intente de nuevo"
-		}
 	
-		this.existFilename = null;
 	}
 	
-	// busca y devuelve el proucto  por el id
-	// devolver un objeto especifico
-	getByID(idProduct) {
-		// leer la lista de productos
-		// buscar dentro de la lista por clave id
-		// devolver el producto elegido por id
-	}
-	
-	// busca y borra el producto por el id
-	// borrar objeto especifico
+	async getByID(idProduct) {
+		const productList = await this.getAll();
+		const list = []
+		list.push[productList]
+		const productByID = list.find((item) => item.id == idProduct);
+		return productByID
+		} 
+
 	deleteByID(idProduct) {
 		// leer la lista
 		// buscar dentro de la lista por clave id

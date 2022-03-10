@@ -8,6 +8,10 @@ const container = new Container("products.json");
 	console.log(await container.getAll());
 	console.log(await container.save(product));
 	console.log(await container.getAll());
-	console.log(await container.save(product));
-	console.log(await container.getAll());
-})();
+	const item  = await container.getByID(1);
+	console.log(`articulo extraido "${JSON.stringify(item)}"`) 
+	
+	await container.deleteByID(1);	
+	console.log(await container.getAll());	
+
+})()
