@@ -1,67 +1,80 @@
-const fs = require('fs').promises;
+const fs = require("fs");
 
-class Container {  
-	
-	constructor(filename) {
-		this.filename = filename;
-		this.existFilename = null;
-		this.data = [] 
-	}
+class Container {
+  constructor(filename) {
+    //Armo Constructor
+    this.filename = filename; //Asigno nombre de archivo
+    this.data = [];
+  }
 
-	async getAll(){
-		try {
-			const productList = await fs.readFile(this.filename, "utf-8");
-			this.existFilename = true;
-			return productList;
-		} catch {
-			return this.existFilename = false;
-		}
-	}
-	
-	async save(product) {
-		const productList = await this.getAll();
-		this.data.push[productList]
-		if(this.existFilename){
-			if (this.data.length === 0){
-				product.id = 1;
-				await fs.writeFile(this.filename,JSON.stringify(product));
-				return product.id;
-			}
+  async getAll() {
+    try {
+      const list = await fs.promises.readFile(this.filename, "utf-8");
+      return JSON.parse(list);
+    } catch (err) {
+      console.log("List don't create");
+      return null;
+    }
+  }
 
-			if(this.data.length > 0 ){
-				const IDList =  this.data.map(a => a.id);
-				const lastID = IDList.pop();
-				product.id = lastID + 1 ;
-				await fs.writeFile(this.filename,JSON.stringify(product));
-				return product.id;
-			}
-		} 
+  async save(obj) {
+    try {
+      if (!fs.existsSync(this.filename)) {
+        try {
+          obj.id = 1;
+          this.data.push(obj);
+          await fs.promises.writeFile(this.filename, JSON.stringify(this.data));
+          console.log(`add "${obj.name}" to "${this.filename}"`);
+          return obj.id;
+        } catch (err) {
+          console.log(`Error to create file`);
+        }
+      } else {
+        try {
+          this.data = await this.getAll();
+          const IDList = this.data.map((a) => a.id);
+          const lastID = IDList.pop();
+          obj.id = lastID + 1;
+          this.data.push(obj);
+          await fs.promises.writeFile(this.filename, JSON.stringify(this.data));
+          console.log(`add "${obj.name}" with "${obj.id}"`);
+          return obj.id;
+        } catch (err) {
+          console.log(`error to create file`);
+        }
+      }
+    } catch (err) {
+      console.log(`Error `);
+    }
+  }
 
-	
-	}
-	
-	async getByID(idProduct) {
-		const productList = await this.getAll();
-		const list = []
-		list.push[productList]
-		const productByID = list.find((item) => item.id == idProduct);
-		return productByID
-		} 
+  async getById(id) {
+    try {
+      const x = await this.getAll();
+      return x.find((obj) => obj.id == id);
+    } catch (err) {
+      console.log(`Error`);
+    }
+  }
 
-	deleteByID(idProduct) {
-		// leer la lista
-		// buscar dentro de la lista por clave id
-		// borrar el producto elegido por id
-	}
-	
-	// borra toda la lista
-	// borrar fichero
-	deleteAll() {
-		// borrar la lista de productos: contenido o fichero
-	}
+  //deleteById(Number): void - Elimina del archivo el objeto con el id buscado.
+  async deleteById(id) {
+    var x = await this.getAll();
+    let y = x.findIndex((obj) => obj.id == id);
+    x.splice(y, 1);
+    await fs.promises.writeFile(this.filename, JSON.stringify(x));
+    console.log("Delete complete");
+  }
+
+  async deleteAll() {
+    fs.unlink(this.filename, (err) => {
+      if (err) {
+        console.log(`error in delete "${this.filename}"`);
+      } else {
+        console.log(`delete succes "${this.filename}" `);
+      }
+    });
+  }
 }
 
-//estoy trabajando con common js entonces uso : 
 module.exports = Container;
-//si estoy trabajando con Esmodules tengo que indicarlo en el package.jon
-//y se exporta : export defautl Contenedor 
